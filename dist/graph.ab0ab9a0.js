@@ -118,7 +118,60 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
   return newRequire;
 })({"src/graph.js":[function(require,module,exports) {
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var margin = {
+  top: 40,
+  right: 20,
+  bottom: 50,
+  left: 100
+};
+var graphWidth = 560 - margin.left - margin.right;
+var graphHeight = 400 - margin.top - margin.bottom;
+var svg = d3.select('.canvas').append('svg').attr('width', graphWidth + margin.left + margin.right).attr('height', graphHeight + margin.top + margin.bottom);
+var graph = svg.append('g').attr('width', graphWidth).attr('height', graphHeight).attr('transform', "translate(".concat(margin.left, ", ").concat(margin.right, ")"));
+
+var update = function update() {
+  console.log(data);
+}; //data array and firestore
+
+
+var data = [];
+db.collection("activities").onSnapshot(function (res) {
+  res.docChanges().forEach(function (change) {
+    var doc = _objectSpread({}, change.doc.data(), {
+      id: change.doc.id
+    }); // console.log(doc);
+
+
+    switch (change.type) {
+      case "added":
+        data.push(doc);
+        break;
+
+      case "modified":
+        var index = data.findIndex(function (item) {
+          return item.id === doc.id;
+        });
+        data[index] = doc;
+        break;
+
+      case "removed":
+        data = data.filter(function (item) {
+          return item.id !== doc.id;
+        });
+        break;
+
+      default:
+        break;
+    }
+  });
+  update(data);
+});
 },{}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -147,7 +200,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "33049" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50089" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

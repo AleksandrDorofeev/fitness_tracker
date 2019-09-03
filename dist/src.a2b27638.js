@@ -138,6 +138,24 @@ btns.forEach(function (btn) {
 
     formAct.textContent = activity;
   });
+}); //form submit
+
+form.addEventListener("submit", function (e) {
+  e.preventDefault();
+  var distance = parseInt(input.value);
+
+  if (distance) {
+    db.collection("activities").add({
+      distance: distance,
+      activity: activity,
+      date: new Date().toString()
+    }).then(function () {
+      error.textContent = "";
+      input.value = "";
+    });
+  } else {
+    error.textContent = "Please enter a valid distance";
+  }
 });
 },{}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
@@ -167,7 +185,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "33049" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50089" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
