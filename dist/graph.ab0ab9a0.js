@@ -132,11 +132,31 @@ var margin = {
 };
 var graphWidth = 560 - margin.left - margin.right;
 var graphHeight = 400 - margin.top - margin.bottom;
-var svg = d3.select('.canvas').append('svg').attr('width', graphWidth + margin.left + margin.right).attr('height', graphHeight + margin.top + margin.bottom);
-var graph = svg.append('g').attr('width', graphWidth).attr('height', graphHeight).attr('transform', "translate(".concat(margin.left, ", ").concat(margin.right, ")"));
+var svg = d3.select(".canvas").append("svg").attr("width", graphWidth + margin.left + margin.right).attr("height", graphHeight + margin.top + margin.bottom);
+var graph = svg.append("g").attr("width", graphWidth).attr("height", graphHeight).attr("transform", "translate(".concat(margin.left, ", ").concat(margin.right, ")")); //scales
+
+var x = d3.scaleTime().range([0, graphWidth]);
+var y = d3.scaleTime().range([graphHeight, 0]); //axes groups
+
+var xAxisGroup = graph.append("g").attr("class", "x-axis").attr("transform", "translate(0,".concat(graphHeight, ")"));
+var yAxisGroup = graph.append("g").attr("class", "y-axis");
 
 var update = function update() {
-  console.log(data);
+  //set scale domains
+  x.domain(d3.extent(data, function (d) {
+    return new Date(d.date);
+  }));
+  y.domain([0, d3.max(data, function (d) {
+    return d.distance;
+  })]); //create axes
+
+  var xAxis = d3.axisBottom(x).ticks(4).tickFormat(d3.timeFormat("%b %d"));
+  var yAxis = d3.axisLeft(y).ticks(4).tickFormat(function (d) {
+    return d + "m";
+  }); //call axes
+
+  xAxisGroup.call(xAxis);
+  yAxisGroup.call(yAxis);
 }; //data array and firestore
 
 
@@ -200,7 +220,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50089" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "34303" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
